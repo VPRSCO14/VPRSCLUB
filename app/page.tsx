@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +17,6 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen">
-      {/* Hero */}
       <section className="px-6 md:px-20 py-24 md:py-32 border-b border-vprs-gray/20">
         <p className="font-body text-sm tracking-wide text-vprs-gray uppercase mb-4">
           VPRS.CO
@@ -29,17 +29,17 @@ export default async function Home() {
         </p>
       </section>
 
-      {/* Categorias */}
       <section className="px-6 md:px-20 py-16">
         <h2 className="font-display text-2xl mb-8">Categorias</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {categorias?.map((cat) => (
-            <div
+            <Link
               key={cat.id}
-              className="border border-vprs-gray/20 rounded-vprs p-6 hover:border-vprs-black transition-colors"
+              href={`/tienda/${cat.slug}`}
+              className="border border-vprs-gray/20 rounded-vprs p-6 hover:border-vprs-black transition-colors block"
             >
               <p className="font-body font-medium">{cat.nombre}</p>
-            </div>
+            </Link>
           ))}
           {(!categorias || categorias.length === 0) && (
             <p className="font-body text-vprs-gray">
@@ -49,12 +49,15 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Productos destacados */}
       <section className="px-6 md:px-20 py-16">
         <h2 className="font-display text-2xl mb-8">Productos destacados</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {productos?.map((prod) => (
-            <div key={prod.id} className="rounded-vprs border border-vprs-gray/20 overflow-hidden">
+            <Link
+              key={prod.id}
+              href={`/producto/${prod.id}`}
+              className="rounded-vprs border border-vprs-gray/20 overflow-hidden block"
+            >
               <div className="aspect-square bg-vprs-graphite/5" />
               <div className="p-4">
                 <p className="font-body font-medium text-sm">{prod.nombre}</p>
@@ -62,7 +65,7 @@ export default async function Home() {
                   ${prod.precio.toLocaleString("es-CO")}
                 </p>
               </div>
-            </div>
+            </Link>
           ))}
           {(!productos || productos.length === 0) && (
             <p className="font-body text-vprs-gray">
