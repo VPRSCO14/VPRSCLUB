@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { PlusIcon, CartIcon, UserIcon } from "@/components/icons";
+import { PlusIcon, ListIcon, CartIcon, UserIcon } from "@/components/icons";
 
 type PerfilUsuario = {
   perfil_id: string;
@@ -59,6 +59,12 @@ export default function AdminDashboard() {
     );
   }
 
+  const secciones = [
+    { titulo: "Productos", verHref: "/admin/productos", nuevoHref: "/admin/productos/nuevo" },
+    { titulo: "Categorias", verHref: "/admin/categorias", nuevoHref: "/admin/categorias/nueva" },
+    { titulo: "Blog", verHref: "/admin/blog", nuevoHref: "/admin/blog/nuevo" },
+  ];
+
   return (
     <main className="min-h-screen px-6 md:px-20 py-16">
       <h1 className="font-display text-2xl mb-2">Panel VPRS.CO</h1>
@@ -66,31 +72,31 @@ export default function AdminDashboard() {
         Perfil: {nombrePerfil}
       </p>
 
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        {secciones.map((seccion) => (
+          <div key={seccion.titulo} className="card-vprs p-6">
+            <p className="font-body font-medium mb-5">{seccion.titulo}</p>
+            <div className="flex flex-col gap-2">
+              <Link
+                href={seccion.verHref}
+                className="flex items-center gap-2 font-body text-sm text-vprs-graphite hover:text-vprs-black transition-colors"
+              >
+                <ListIcon size={16} />
+                Ver listado
+              </Link>
+              <Link
+                href={seccion.nuevoHref}
+                className="flex items-center gap-2 font-body text-sm text-vprs-graphite hover:text-vprs-black transition-colors"
+              >
+                <PlusIcon size={16} />
+                Agregar nuevo
+              </Link>
+            </div>
+          </div>
+        ))}
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Link
-          href="/admin/productos/nuevo"
-          className="card-vprs p-6 block"
-        >
-          <PlusIcon className="mb-4" />
-          <p className="font-body font-medium">Agregar producto</p>
-        </Link>
-
-        <Link
-          href="/admin/categorias/nueva"
-          className="card-vprs p-6 block"
-        >
-          <PlusIcon className="mb-4" />
-          <p className="font-body font-medium">Agregar categoria</p>
-        </Link>
-
-        <Link
-          href="/admin/blog/nuevo"
-          className="card-vprs p-6 block"
-        >
-          <PlusIcon className="mb-4" />
-          <p className="font-body font-medium">Agregar articulo</p>
-        </Link>
-
         <div className="rounded-vprs border border-vprs-black/10 p-6 text-vprs-gray/50">
           <CartIcon className="mb-4" />
           <p className="font-body font-medium mb-1">Pedidos</p>

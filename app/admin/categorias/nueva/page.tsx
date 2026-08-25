@@ -2,16 +2,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-
-function slugify(texto: string) {
-  return texto
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
+import { slugify } from "@/lib/slugify";
 
 export default function NuevaCategoria() {
   const [nombre, setNombre] = useState("");

@@ -71,3 +71,24 @@ export function ChevronDownIcon({ className, size = 14 }: IconProps) {
     </svg>
   );
 }
+
+export function ListIcon({ className, size = 20 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className} {...base}>
+      <line x1="8" y1="6" x2="20" y2="6" />
+      <line x1="8" y1="12" x2="20" y2="12" />
+      <line x1="8" y1="18" x2="20" y2="18" />
+      <line x1="4" y1="6" x2="4.01" y2="6" />
+      <line x1="4" y1="12" x2="4.01" y2="12" />
+      <line x1="4" y1="18" x2="4.01" y2="18" />
+    </svg>
+  );
+}
+
+export function ChevronRightIcon({ className, size = 18 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className} {...base}>
+      <polyline points="9 6 15 12 9 18" />
+    </svg>
+  );
+}
