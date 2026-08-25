@@ -4,6 +4,12 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { PlusIcon, CartIcon, UserIcon } from "@/components/icons";
+
+type PerfilUsuario = {
+  perfil_id: string;
+  perfiles: { nombre_perfil: string } | { nombre_perfil: string }[] | null;
+};
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -26,7 +32,11 @@ export default function AdminDashboard() {
         .eq("id", usuario.id)
         .single();
 
-      const perfil = (perfilUsuario as any)?.perfiles?.nombre_perfil;
+      const perfilData = perfilUsuario as PerfilUsuario | null;
+      const perfilRel = Array.isArray(perfilData?.perfiles)
+        ? perfilData?.perfiles[0]
+        : perfilData?.perfiles;
+      const perfil = perfilRel?.nombre_perfil;
 
       if (!perfil || perfil === "cliente") {
         await supabase.auth.signOut();
@@ -59,10 +69,23 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Link
           href="/admin/productos/nuevo"
-          className="border border-vprs-gray/20 rounded-vprs p-6 hover:border-vprs-black transition-colors"
+          className="card-vprs p-6 block"
         >
+          <PlusIcon className="mb-4" />
           <p className="font-body font-medium">Agregar producto</p>
         </Link>
+
+        <div className="rounded-vprs border border-vprs-black/10 p-6 text-vprs-gray/50">
+          <CartIcon className="mb-4" />
+          <p className="font-body font-medium mb-1">Pedidos</p>
+          <p className="font-body text-xs">Próximamente</p>
+        </div>
+
+        <div className="rounded-vprs border border-vprs-black/10 p-6 text-vprs-gray/50">
+          <UserIcon className="mb-4" />
+          <p className="font-body font-medium mb-1">Clientes</p>
+          <p className="font-body text-xs">Próximamente</p>
+        </div>
       </div>
     </main>
   );

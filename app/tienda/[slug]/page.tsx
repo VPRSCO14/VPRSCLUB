@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import ProductGrid from "@/components/ProductGrid";
+import { ArrowLeftIcon } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -29,9 +31,10 @@ export default async function PaginaCategoria({
 
   return (
     <main className="min-h-screen">
-      <section className="px-6 md:px-20 py-16 border-b border-vprs-gray/20">
-        <Link href="/" className="font-body text-sm text-vprs-gray">
-          &larr; Volver al inicio
+      <section className="px-6 md:px-20 py-16 border-b border-vprs-black/10">
+        <Link href="/" className="font-body text-sm text-vprs-gray inline-flex items-center gap-2">
+          <ArrowLeftIcon size={14} />
+          Volver al inicio
         </Link>
         <h1 className="font-display text-3xl md:text-5xl mt-4">
           {categoria!.nombre}
@@ -39,28 +42,7 @@ export default async function PaginaCategoria({
       </section>
 
       <section className="px-6 md:px-20 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {productos?.map((prod) => (
-            <Link
-              key={prod.id}
-              href={`/producto/${prod.id}`}
-              className="rounded-vprs border border-vprs-gray/20 overflow-hidden block"
-            >
-              <div className="aspect-square bg-vprs-graphite/5" />
-              <div className="p-4">
-                <p className="font-body font-medium text-sm">{prod.nombre}</p>
-                <p className="font-body text-vprs-gray text-sm mt-1">
-                  ${prod.precio.toLocaleString("es-CO")}
-                </p>
-              </div>
-            </Link>
-          ))}
-          {(!productos || productos.length === 0) && (
-            <p className="font-body text-vprs-gray">
-              Aun no hay productos en esta categoria.
-            </p>
-          )}
-        </div>
+        <ProductGrid productos={productos ?? []} />
       </section>
     </main>
   );

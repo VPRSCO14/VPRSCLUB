@@ -84,7 +84,7 @@ export default function NuevoProducto() {
             required
             value={form.codigo}
             onChange={handleChange}
-            className="w-full h-14 rounded-vprs border border-vprs-gray/30 px-4 font-body"
+            className="input-vprs"
           />
         </div>
 
@@ -95,7 +95,7 @@ export default function NuevoProducto() {
             required
             value={form.nombre}
             onChange={handleChange}
-            className="w-full h-14 rounded-vprs border border-vprs-gray/30 px-4 font-body"
+            className="input-vprs"
           />
         </div>
 
@@ -108,7 +108,7 @@ export default function NuevoProducto() {
               required
               value={form.precio}
               onChange={handleChange}
-              className="w-full h-14 rounded-vprs border border-vprs-gray/30 px-4 font-body"
+              className="input-vprs"
             />
           </div>
           <div>
@@ -119,7 +119,7 @@ export default function NuevoProducto() {
               required
               value={form.stock}
               onChange={handleChange}
-              className="w-full h-14 rounded-vprs border border-vprs-gray/30 px-4 font-body"
+              className="input-vprs"
             />
           </div>
         </div>
@@ -130,7 +130,7 @@ export default function NuevoProducto() {
             name="categoria_id"
             value={form.categoria_id}
             onChange={handleChange}
-            className="w-full h-14 rounded-vprs border border-vprs-gray/30 px-4 font-body"
+            className="input-vprs"
           >
             <option value="">Selecciona una categoria</option>
             {categorias.map((c) => (
@@ -147,7 +147,7 @@ export default function NuevoProducto() {
             name="marca_id"
             value={form.marca_id}
             onChange={handleChange}
-            className="w-full h-14 rounded-vprs border border-vprs-gray/30 px-4 font-body"
+            className="input-vprs"
           >
             <option value="">Selecciona una marca</option>
             {marcas.map((m) => (
@@ -165,7 +165,7 @@ export default function NuevoProducto() {
             value={form.descripcion}
             onChange={handleChange}
             rows={4}
-            className="w-full rounded-vprs border border-vprs-gray/30 px-4 py-3 font-body"
+            className="textarea-vprs"
           />
         </div>
 
@@ -174,7 +174,7 @@ export default function NuevoProducto() {
         <button
           type="submit"
           disabled={guardando}
-          className="w-full h-14 rounded-vprs bg-vprs-black text-vprs-white font-body font-medium disabled:opacity-50"
+          className="btn-dark w-full"
         >
           {guardando ? "Guardando..." : "Guardar producto"}
         </button>
