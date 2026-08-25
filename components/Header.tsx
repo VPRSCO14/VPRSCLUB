@@ -1,7 +1,28 @@
 import Link from "next/link";
-import { SearchIcon, UserIcon, CartIcon } from "./icons";
+import { supabase } from "@/lib/supabase";
+import { SearchIcon, UserIcon, CartIcon, ChevronDownIcon } from "./icons";
 
-export default function Header() {
+const NAV_CATEGORIAS = [
+  { label: "Vape Desechable", nombre: "Desechables" },
+  { label: "Vape Recargable", nombre: "Recargables" },
+  { label: "Líquidos de Vapeo", nombre: "Sales" },
+  { label: "Parafernalia", nombre: "Parafernalia" },
+];
+
+export default async function Header() {
+  const { data: categorias } = await supabase
+    .from("categorias")
+    .select("nombre, slug")
+    .in(
+      "nombre",
+      NAV_CATEGORIAS.map((c) => c.nombre)
+    );
+
+  const navItems = NAV_CATEGORIAS.map((item) => {
+    const categoria = categorias?.find((c) => c.nombre === item.nombre);
+    return categoria ? { label: item.label, slug: categoria.slug } : null;
+  }).filter((item): item is { label: string; slug: string } => item !== null);
+
   return (
     <header className="flex items-center justify-between px-6 md:px-20 py-7 bg-vprs-black border-b border-vprs-white/10">
       <Link href="/" className="font-display text-xl font-semibold tracking-wide text-vprs-white">
@@ -9,15 +30,16 @@ export default function Header() {
       </Link>
 
       <nav className="hidden md:flex items-center gap-9">
-        <Link href="/" className="nav-link text-vprs-white/70 hover:text-vprs-white">
-          Tienda
-        </Link>
-        <Link href="/#novedades" className="nav-link text-vprs-white/70 hover:text-vprs-white">
-          Novedades
-        </Link>
-        <Link href="/#comunidad" className="nav-link text-vprs-white/70 hover:text-vprs-white">
-          Comunidad
-        </Link>
+        {navItems.map((item) => (
+          <Link
+            key={item.slug}
+            href={`/tienda/${item.slug}`}
+            className="nav-link flex items-center gap-1 text-vprs-white/70 hover:text-vprs-white"
+          >
+            {item.label}
+            <ChevronDownIcon />
+          </Link>
+        ))}
       </nav>
 
       <div className="flex items-center gap-5 text-vprs-white/70">

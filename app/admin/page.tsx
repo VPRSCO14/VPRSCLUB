@@ -75,6 +75,14 @@ export default function AdminDashboard() {
           <p className="font-body font-medium">Agregar producto</p>
         </Link>
 
+        <Link
+          href="/admin/categorias/nueva"
+          className="card-vprs p-6 block"
+        >
+          <PlusIcon className="mb-4" />
+          <p className="font-body font-medium">Agregar categoria</p>
+        </Link>
+
         <div className="rounded-vprs border border-vprs-black/10 p-6 text-vprs-gray/50">
           <CartIcon className="mb-4" />
           <p className="font-body font-medium mb-1">Pedidos</p>
