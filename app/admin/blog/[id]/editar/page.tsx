@@ -1,14 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { slugify } from "@/lib/slugify";
+import { ArrowLeftIcon } from "@/components/icons";
 
-export default function NuevoArticulo() {
+export default function EditarArticulo() {
+  const { id } = useParams<{ id: string }>();
+  const router = useRouter();
+
   const [titulo, setTitulo] = useState("");
   const [slug, setSlug] = useState("");
-  const [slugEditadoManual, setSlugEditadoManual] = useState(false);
   const [mensaje, setMensaje] = useState("");
+  const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
 
   const [form, setForm] = useState({
@@ -19,18 +25,30 @@ export default function NuevoArticulo() {
     publicado: true,
   });
 
-  const handleTituloChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const valor = e.target.value;
-    setTitulo(valor);
-    if (!slugEditadoManual) {
-      setSlug(slugify(valor));
-    }
-  };
+  useEffect(() => {
+    const cargar = async () => {
+      const { data: articulo } = await supabase
+        .from("articulos")
+        .select("titulo, slug, resumen, contenido, imagen_url, autor, publicado")
+        .eq("id", id)
+        .single();
 
-  const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSlugEditadoManual(true);
-    setSlug(slugify(e.target.value));
-  };
+      if (articulo) {
+        setTitulo(articulo.titulo ?? "");
+        setSlug(articulo.slug ?? "");
+        setForm({
+          resumen: articulo.resumen ?? "",
+          contenido: articulo.contenido ?? "",
+          imagen_url: articulo.imagen_url ?? "",
+          autor: articulo.autor ?? "",
+          publicado: articulo.publicado ?? true,
+        });
+      }
+
+      setCargando(false);
+    };
+    cargar();
+  }, [id]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -47,15 +65,18 @@ export default function NuevoArticulo() {
     setGuardando(true);
     setMensaje("");
 
-    const { error } = await supabase.from("articulos").insert({
-      titulo,
-      slug,
-      resumen: form.resumen || null,
-      contenido: form.contenido,
-      imagen_url: form.imagen_url || null,
-      autor: form.autor || null,
-      publicado: form.publicado,
-    });
+    const { error } = await supabase
+      .from("articulos")
+      .update({
+        titulo,
+        slug,
+        resumen: form.resumen || null,
+        contenido: form.contenido,
+        imagen_url: form.imagen_url || null,
+        autor: form.autor || null,
+        publicado: form.publicado,
+      })
+      .eq("id", id);
 
     setGuardando(false);
 
@@ -64,16 +85,25 @@ export default function NuevoArticulo() {
       return;
     }
 
-    setMensaje("Articulo guardado correctamente.");
-    setTitulo("");
-    setSlug("");
-    setSlugEditadoManual(false);
-    setForm({ resumen: "", contenido: "", imagen_url: "", autor: "", publicado: true });
+    router.push("/admin/blog");
   };
+
+  if (cargando) {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        <p className="font-body text-vprs-gray">Cargando...</p>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen px-6 md:px-20 py-16 max-w-2xl">
-      <h1 className="font-display text-2xl mb-8">Agregar articulo</h1>
+      <Link href="/admin/blog" className="font-body text-sm text-vprs-gray inline-flex items-center gap-2 mb-6">
+        <ArrowLeftIcon size={14} />
+        Volver al blog
+      </Link>
+
+      <h1 className="font-display text-2xl mb-8">Editar articulo</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -82,7 +112,7 @@ export default function NuevoArticulo() {
             name="titulo"
             required
             value={titulo}
-            onChange={handleTituloChange}
+            onChange={(e) => setTitulo(e.target.value)}
             className="input-vprs"
           />
         </div>
@@ -93,7 +123,7 @@ export default function NuevoArticulo() {
             name="slug"
             required
             value={slug}
-            onChange={handleSlugChange}
+            onChange={(e) => setSlug(slugify(e.target.value))}
             className="input-vprs"
           />
           <p className="font-body text-xs text-vprs-gray mt-2">
@@ -152,7 +182,7 @@ export default function NuevoArticulo() {
             checked={form.publicado}
             onChange={handleChange}
           />
-          Publicar de inmediato
+          Publicado
         </label>
 
         {mensaje && <p className="font-body text-sm">{mensaje}</p>}
@@ -162,7 +192,7 @@ export default function NuevoArticulo() {
           disabled={guardando}
           className="btn-dark w-full"
         >
-          {guardando ? "Guardando..." : "Guardar articulo"}
+          {guardando ? "Guardando..." : "Guardar cambios"}
         </button>
       </form>
     </main>
