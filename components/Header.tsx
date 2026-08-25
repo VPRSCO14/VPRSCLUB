@@ -25,24 +25,30 @@ export default async function Header() {
 
   return (
     <header className="flex items-center justify-between px-6 md:px-20 py-7 bg-vprs-black border-b border-vprs-white/10">
-      <Link href="/" className="font-display text-xl font-semibold tracking-wide text-vprs-white">
+      <Link href="/" className="font-display text-xl font-semibold tracking-wide text-vprs-white shrink-0">
         VPRS.CO
       </Link>
 
-      <nav className="hidden md:flex items-center gap-9">
+      <nav className="hidden xl:flex items-center gap-9">
         {navItems.map((item) => (
           <Link
             key={item.slug}
             href={`/tienda/${item.slug}`}
-            className="nav-link flex items-center gap-1 text-vprs-white/70 hover:text-vprs-white"
+            className="nav-link flex items-center gap-1 whitespace-nowrap text-vprs-white/70 hover:text-vprs-white"
           >
             {item.label}
             <ChevronDownIcon />
           </Link>
         ))}
+        <Link
+          href="/blog"
+          className="nav-link whitespace-nowrap text-vprs-white/70 hover:text-vprs-white"
+        >
+          Blog
+        </Link>
       </nav>
 
-      <div className="flex items-center gap-5 text-vprs-white/70">
+      <div className="flex items-center gap-5 text-vprs-white/70 shrink-0">
         <button aria-label="Buscar" className="hover:text-vprs-white transition-colors">
           <SearchIcon />
         </button>
