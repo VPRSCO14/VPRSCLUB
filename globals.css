@@ -1,0 +1,53 @@
+@import "tailwindcss";
+@config "../tailwind.config.ts";
+
+:root {
+  /* Color de campaña: cambia este valor para adaptar el acento a cada temporada
+     (ej. Halloween #D9662B, Mundial #2E4E8C, Black Friday #B08D3E). */
+  --vprs-accent: #6E1F2B;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-body), system-ui, sans-serif;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--vprs-accent);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .btn-dark {
+    @apply inline-flex items-center justify-center h-14 px-8 rounded-vprs bg-vprs-black text-vprs-white font-body font-medium transition-colors hover:bg-vprs-graphite disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center h-14 px-8 rounded-vprs border border-vprs-black/20 text-vprs-black font-body transition-colors hover:border-vprs-black;
+  }
+
+  .input-vprs {
+    @apply w-full h-14 rounded-vprs border border-vprs-gray/30 px-4 font-body text-vprs-black outline-none transition-colors focus:border-vprs-black bg-white;
+  }
+
+  .textarea-vprs {
+    @apply w-full rounded-vprs border border-vprs-gray/30 px-4 py-3 font-body text-vprs-black outline-none transition-colors focus:border-vprs-black bg-white;
+  }
+
+  .card-vprs {
+    @apply rounded-vprs border border-vprs-black/10 transition-all hover:border-vprs-black/40;
+  }
+
+  .nav-link {
+    @apply font-body text-sm text-vprs-gray transition-colors hover:text-vprs-black;
+  }
+
+  .vprs-accent-text {
+    color: var(--vprs-accent);
+  }
+
+  .vprs-accent-bg {
+    background-color: var(--vprs-accent);
+  }
+}

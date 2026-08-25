@@ -12,6 +12,7 @@ const config: Config = {
         "vprs-graphite": "#2B2B2B",
         "vprs-gray": "#707070",
         "vprs-white": "#F8F8F8",
+        "vprs-accent": "var(--vprs-accent)",
       },
       fontFamily: {
         display: ["var(--font-display)"],
