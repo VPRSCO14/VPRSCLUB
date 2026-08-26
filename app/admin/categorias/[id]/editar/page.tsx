@@ -13,6 +13,7 @@ export default function EditarCategoria() {
 
   const [nombre, setNombre] = useState("");
   const [slug, setSlug] = useState("");
+  const [imagenUrl, setImagenUrl] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
@@ -21,13 +22,14 @@ export default function EditarCategoria() {
     const cargar = async () => {
       const { data: categoria } = await supabase
         .from("categorias")
-        .select("nombre, slug")
+        .select("nombre, slug, banner_url")
         .eq("id", id)
         .single();
 
       if (categoria) {
         setNombre(categoria.nombre ?? "");
         setSlug(categoria.slug ?? "");
+        setImagenUrl(categoria.banner_url ?? "");
       }
 
       setCargando(false);
@@ -42,7 +44,7 @@ export default function EditarCategoria() {
 
     const { error } = await supabase
       .from("categorias")
-      .update({ nombre, slug })
+      .update({ nombre, slug, banner_url: imagenUrl || null })
       .eq("id", id);
 
     setGuardando(false);
@@ -95,6 +97,20 @@ export default function EditarCategoria() {
           />
           <p className="font-body text-xs text-vprs-gray mt-2">
             Se vera en /tienda/{slug || "..."}
+          </p>
+        </div>
+
+        <div>
+          <label className="font-body text-sm block mb-2">Imagen (URL)</label>
+          <input
+            name="imagen_url"
+            value={imagenUrl}
+            onChange={(e) => setImagenUrl(e.target.value)}
+            className="input-vprs"
+            placeholder="https://..."
+          />
+          <p className="font-body text-xs text-vprs-gray mt-2">
+            Opcional. Si no se pone, se usa un fondo de color por defecto.
           </p>
         </div>
 

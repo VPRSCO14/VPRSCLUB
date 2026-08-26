@@ -10,6 +10,7 @@ export default function NuevaCategoria() {
   const [nombre, setNombre] = useState("");
   const [slug, setSlug] = useState("");
   const [slugEditadoManual, setSlugEditadoManual] = useState(false);
+  const [imagenUrl, setImagenUrl] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [guardando, setGuardando] = useState(false);
 
@@ -34,6 +35,7 @@ export default function NuevaCategoria() {
     const { error } = await supabase.from("categorias").insert({
       nombre,
       slug,
+      banner_url: imagenUrl || null,
     });
 
     setGuardando(false);
@@ -47,6 +49,7 @@ export default function NuevaCategoria() {
     setNombre("");
     setSlug("");
     setSlugEditadoManual(false);
+    setImagenUrl("");
   };
 
   return (
@@ -81,6 +84,20 @@ export default function NuevaCategoria() {
           />
           <p className="font-body text-xs text-vprs-gray mt-2">
             Se vera en /tienda/{slug || "..."}
+          </p>
+        </div>
+
+        <div>
+          <label className="font-body text-sm block mb-2">Imagen (URL)</label>
+          <input
+            name="imagen_url"
+            value={imagenUrl}
+            onChange={(e) => setImagenUrl(e.target.value)}
+            className="input-vprs"
+            placeholder="https://..."
+          />
+          <p className="font-body text-xs text-vprs-gray mt-2">
+            Opcional. Si no se pone, se usa un fondo de color por defecto.
           </p>
         </div>
 
