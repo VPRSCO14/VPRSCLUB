@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { ArrowLeftIcon } from "@/components/icons";
+import VariantesEditor, { VarianteRow } from "@/components/admin/VariantesEditor";
 
 type Categoria = { id: string; nombre: string };
 type Marca = { id: string; nombre: string };
@@ -15,6 +16,8 @@ export default function EditarProducto() {
 
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [marcas, setMarcas] = useState<Marca[]>([]);
+  const [variantes, setVariantes] = useState<VarianteRow[]>([]);
+  const [variantesOriginales, setVariantesOriginales] = useState<string[]>([]);
   const [mensaje, setMensaje] = useState("");
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
@@ -32,15 +35,17 @@ export default function EditarProducto() {
 
   useEffect(() => {
     const cargar = async () => {
-      const [{ data: cats }, { data: marcasData }, { data: producto }] = await Promise.all([
-        supabase.from("categorias").select("id, nombre").order("nombre"),
-        supabase.from("marcas").select("id, nombre").order("nombre"),
-        supabase
-          .from("productos")
-          .select("codigo, nombre, precio, stock, descripcion, categoria_id, marca_id, activo")
-          .eq("id", id)
-          .single(),
-      ]);
+      const [{ data: cats }, { data: marcasData }, { data: producto }, { data: variantesData }] =
+        await Promise.all([
+          supabase.from("categorias").select("id, nombre").order("nombre"),
+          supabase.from("marcas").select("id, nombre").order("nombre"),
+          supabase
+            .from("productos")
+            .select("codigo, nombre, precio, stock, descripcion, categoria_id, marca_id, activo")
+            .eq("id", id)
+            .single(),
+          supabase.from("producto_variantes").select("id, sabor_id, stock").eq("producto_id", id),
+        ]);
 
       setCategorias(cats || []);
       setMarcas(marcasData || []);
@@ -57,6 +62,14 @@ export default function EditarProducto() {
           activo: producto.activo ?? true,
         });
       }
+
+      const filas = (variantesData || []).map((v) => ({
+        id: v.id,
+        sabor_id: v.sabor_id,
+        stock: String(v.stock),
+      }));
+      setVariantes(filas);
+      setVariantesOriginales(filas.map((f) => f.id!));
 
       setCargando(false);
     };
@@ -92,10 +105,47 @@ export default function EditarProducto() {
       })
       .eq("id", id);
 
+    if (error) {
+      setGuardando(false);
+      setMensaje("Error al guardar: " + error.message);
+      return;
+    }
+
+    const filasVariantes = variantes.filter((v) => v.sabor_id);
+    const idsActuales = filasVariantes.filter((v) => v.id).map((v) => v.id!);
+    const idsAEliminar = variantesOriginales.filter((originalId) => !idsActuales.includes(originalId));
+    const filasNuevas = filasVariantes.filter((v) => !v.id);
+    const filasExistentes = filasVariantes.filter((v) => v.id);
+
+    const [{ error: errorEliminar }, { error: errorNuevas }, ...resultadosActualizar] = await Promise.all([
+      idsAEliminar.length > 0
+        ? supabase.from("producto_variantes").delete().in("id", idsAEliminar)
+        : Promise.resolve({ error: null }),
+      filasNuevas.length > 0
+        ? supabase.from("producto_variantes").insert(
+            filasNuevas.map((v) => ({
+              producto_id: id,
+              sabor_id: v.sabor_id,
+              stock: parseInt(v.stock, 10) || 0,
+            }))
+          )
+        : Promise.resolve({ error: null }),
+      ...filasExistentes.map((v) =>
+        supabase
+          .from("producto_variantes")
+          .update({ sabor_id: v.sabor_id, stock: parseInt(v.stock, 10) || 0 })
+          .eq("id", v.id!)
+      ),
+    ]);
+
     setGuardando(false);
 
-    if (error) {
-      setMensaje("Error al guardar: " + error.message);
+    const errorActualizar = resultadosActualizar.find((r) => r.error)?.error;
+    if (errorEliminar || errorNuevas || errorActualizar) {
+      setMensaje(
+        "Producto guardado, pero hubo un error con los sabores: " +
+          (errorEliminar || errorNuevas || errorActualizar)?.message
+      );
       return;
     }
 
@@ -211,6 +261,8 @@ export default function EditarProducto() {
             className="textarea-vprs"
           />
         </div>
+
+        <VariantesEditor variantes={variantes} onChange={setVariantes} />
 
         <label className="flex items-center gap-2 font-body text-sm">
           <input
