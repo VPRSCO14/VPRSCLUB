@@ -3,10 +3,13 @@ import { supabase } from "@/lib/supabase";
 import { SearchIcon, UserIcon, CartIcon, ChevronDownIcon } from "./icons";
 
 const NAV_CATEGORIAS = [
-  { label: "Vape Desechable", nombre: "Desechables" },
-  { label: "Vape Recargable", nombre: "Recargables" },
-  { label: "Líquidos de Vapeo", nombre: "Sales" },
+  { label: "Desechables", nombre: "Desechables" },
+  { label: "Semi Desechables", nombre: "Semi Desechables" },
+  { label: "Recargables", nombre: "Recargables" },
+  { label: "Sales", nombre: "Sales" },
   { label: "Parafernalia", nombre: "Parafernalia" },
+  { label: "CBD", nombre: "CBD" },
+  { label: "Otros", nombre: "Otros" },
 ];
 
 export default async function Header() {
