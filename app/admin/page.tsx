@@ -62,6 +62,7 @@ export default function AdminDashboard() {
   const secciones = [
     { titulo: "Productos", verHref: "/admin/productos", nuevoHref: "/admin/productos/nuevo" },
     { titulo: "Categorias", verHref: "/admin/categorias", nuevoHref: "/admin/categorias/nueva" },
+    { titulo: "Sabores", verHref: "/admin/sabores", nuevoHref: "/admin/sabores/nuevo" },
     { titulo: "Blog", verHref: "/admin/blog", nuevoHref: "/admin/blog/nuevo" },
   ];
 
@@ -72,7 +73,7 @@ export default function AdminDashboard() {
         Perfil: {nombrePerfil}
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         {secciones.map((seccion) => (
           <div key={seccion.titulo} className="card-vprs p-6">
             <p className="font-body font-medium mb-5">{seccion.titulo}</p>

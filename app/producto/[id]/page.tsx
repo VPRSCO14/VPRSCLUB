@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import AddToCartButton from "@/components/AddToCartButton";
+import ProductoOpciones from "@/components/ProductoOpciones";
 import { ArrowLeftIcon } from "@/components/icons";
 import { getMaterialGradient } from "@/lib/materials";
 
@@ -19,6 +19,12 @@ type ProductoConRelaciones = {
   marcas: { nombre: string } | { nombre: string }[] | null;
 };
 
+type VarianteConSabor = {
+  id: string;
+  stock: number;
+  sabores: { nombre: string } | { nombre: string }[] | null;
+};
+
 export default async function PaginaProducto({
   params,
 }: {
@@ -26,11 +32,18 @@ export default async function PaginaProducto({
 }) {
   const { id } = await params;
 
-  const { data: producto } = await supabase
-    .from("productos")
-    .select("id, nombre, precio, descripcion, stock, categoria_id, marca_id, categorias(nombre), marcas(nombre)")
-    .eq("id", id)
-    .single();
+  const [{ data: producto }, { data: variantesData }] = await Promise.all([
+    supabase
+      .from("productos")
+      .select("id, nombre, precio, descripcion, stock, categoria_id, marca_id, categorias(nombre), marcas(nombre)")
+      .eq("id", id)
+      .single(),
+    supabase
+      .from("producto_variantes")
+      .select("id, stock, sabores(nombre)")
+      .eq("producto_id", id)
+      .eq("activo", true),
+  ]);
 
   if (!producto) {
     notFound();
@@ -41,7 +54,11 @@ export default async function PaginaProducto({
   const marcaRel = Array.isArray(prod.marcas) ? prod.marcas[0] : prod.marcas;
   const categoriaNombre = categoriaRel?.nombre;
   const marcaNombre = marcaRel?.nombre;
-  const agotado = prod.stock === 0;
+
+  const variantes = ((variantesData as unknown as VarianteConSabor[]) || []).map((v) => {
+    const saborRel = Array.isArray(v.sabores) ? v.sabores[0] : v.sabores;
+    return { id: v.id, nombre: saborRel?.nombre ?? "", stock: v.stock };
+  });
 
   return (
     <main className="min-h-screen px-6 md:px-20 py-16">
@@ -78,14 +95,7 @@ export default async function PaginaProducto({
             </p>
           )}
 
-          <p
-            className="font-body text-sm mb-6"
-            style={{ color: agotado ? "#8C2F2F" : "#707070" }}
-          >
-            {agotado ? "Agotado" : `${prod.stock} disponibles`}
-          </p>
-
-          <AddToCartButton agotado={agotado} />
+          <ProductoOpciones variantes={variantes} stockSimple={prod.stock} />
         </div>
       </div>
     </main>

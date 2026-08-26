@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import VariantesEditor, { VarianteRow } from "@/components/admin/VariantesEditor";
 
 type Categoria = { id: string; nombre: string };
 type Marca = { id: string; nombre: string };
@@ -9,6 +10,7 @@ type Marca = { id: string; nombre: string };
 export default function NuevoProducto() {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [marcas, setMarcas] = useState<Marca[]>([]);
+  const [variantes, setVariantes] = useState<VarianteRow[]>([]);
   const [mensaje, setMensaje] = useState("");
   const [guardando, setGuardando] = useState(false);
 
@@ -43,23 +45,44 @@ export default function NuevoProducto() {
     setGuardando(true);
     setMensaje("");
 
-    const { error } = await supabase.from("productos").insert({
-      codigo: form.codigo,
-      nombre: form.nombre,
-      precio: parseFloat(form.precio),
-      stock: parseInt(form.stock, 10),
-      descripcion: form.descripcion,
-      categoria_id: form.categoria_id || null,
-      marca_id: form.marca_id || null,
-    });
+    const { data: producto, error } = await supabase
+      .from("productos")
+      .insert({
+        codigo: form.codigo,
+        nombre: form.nombre,
+        precio: parseFloat(form.precio),
+        stock: parseInt(form.stock, 10),
+        descripcion: form.descripcion,
+        categoria_id: form.categoria_id || null,
+        marca_id: form.marca_id || null,
+      })
+      .select("id")
+      .single();
 
-    setGuardando(false);
-
-    if (error) {
-      setMensaje("Error al guardar: " + error.message);
+    if (error || !producto) {
+      setGuardando(false);
+      setMensaje("Error al guardar: " + error?.message);
       return;
     }
 
+    const filasVariantes = variantes.filter((v) => v.sabor_id);
+    if (filasVariantes.length > 0) {
+      const { error: errorVariantes } = await supabase.from("producto_variantes").insert(
+        filasVariantes.map((v) => ({
+          producto_id: producto.id,
+          sabor_id: v.sabor_id,
+          stock: parseInt(v.stock, 10) || 0,
+        }))
+      );
+
+      if (errorVariantes) {
+        setGuardando(false);
+        setMensaje("Producto guardado, pero hubo un error con los sabores: " + errorVariantes.message);
+        return;
+      }
+    }
+
+    setGuardando(false);
     setMensaje("Producto guardado correctamente.");
     setForm({
       codigo: "",
@@ -70,6 +93,7 @@ export default function NuevoProducto() {
       categoria_id: "",
       marca_id: "",
     });
+    setVariantes([]);
   };
 
   return (
@@ -168,6 +192,8 @@ export default function NuevoProducto() {
             className="textarea-vprs"
           />
         </div>
+
+        <VariantesEditor variantes={variantes} onChange={setVariantes} />
 
         {mensaje && <p className="font-body text-sm">{mensaje}</p>}
 
