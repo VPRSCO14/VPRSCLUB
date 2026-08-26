@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { ArrowLeftIcon } from "@/components/icons";
 
 export default function NuevoTipoProducto() {
   const [nombre, setNombre] = useState("");
@@ -39,6 +41,11 @@ export default function NuevoTipoProducto() {
 
   return (
     <main className="min-h-screen px-6 md:px-20 py-16 max-w-2xl">
+      <Link href="/admin/tipos-producto" className="font-body text-sm text-vprs-gray inline-flex items-center gap-2 mb-6">
+        <ArrowLeftIcon size={14} />
+        Volver a tipos de producto
+      </Link>
+
       <h1 className="font-display text-2xl mb-8">Agregar tipo de producto</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">

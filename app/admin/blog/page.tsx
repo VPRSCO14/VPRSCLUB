@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { PlusIcon, ChevronRightIcon } from "@/components/icons";
+import { PlusIcon, ChevronRightIcon, ArrowLeftIcon } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +12,11 @@ export default async function ListaArticulos() {
 
   return (
     <main className="min-h-screen px-6 md:px-20 py-16">
+      <Link href="/admin" className="font-body text-sm text-vprs-gray inline-flex items-center gap-2 mb-6">
+        <ArrowLeftIcon size={14} />
+        Volver al panel
+      </Link>
+
       <div className="flex items-center justify-between mb-10">
         <h1 className="font-display text-2xl">Blog</h1>
         <Link href="/admin/blog/nuevo" className="btn-dark inline-flex items-center gap-2">
