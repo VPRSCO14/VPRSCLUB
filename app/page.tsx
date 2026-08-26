@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import CategoryCard from "@/components/CategoryCard";
 import ProductCard from "@/components/ProductCard";
 import { getMaterialGradient } from "@/lib/materials";
 
@@ -39,9 +38,15 @@ export default async function Home() {
 
       <section className="px-6 md:px-20 py-16">
         <h2 className="font-display text-2xl mb-8">Categorias</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="flex flex-nowrap gap-3 overflow-x-auto pb-2">
           {categorias?.map((cat) => (
-            <CategoryCard key={cat.id} slug={cat.slug} nombre={cat.nombre} />
+            <Link
+              key={cat.id}
+              href={`/tienda/${cat.slug}`}
+              className="shrink-0 font-body text-sm px-5 py-2.5 rounded-full border border-vprs-black/15 text-vprs-black hover:border-vprs-black hover:bg-vprs-black hover:text-white transition-colors"
+            >
+              {cat.nombre}
+            </Link>
           ))}
           {(!categorias || categorias.length === 0) && (
             <p className="font-body text-vprs-gray">
