@@ -46,6 +46,16 @@ export default function NuevoProducto() {
     ? tipoSeleccionado.prefijo + String(tipoSeleccionado.consecutivo + 1).padStart(tipoSeleccionado.digitos, "0")
     : "";
 
+  const filasConSabor = variantes.filter((v) => v.sabor_id);
+  const tieneSabores = filasConSabor.length > 0;
+  const sumaVariantes = filasConSabor.reduce((acc, v) => acc + (parseInt(v.stock, 10) || 0), 0);
+
+  useEffect(() => {
+    if (tieneSabores) {
+      setForm((f) => ({ ...f, stock: String(sumaVariantes) }));
+    }
+  }, [tieneSabores, sumaVariantes]);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
@@ -198,8 +208,14 @@ export default function NuevoProducto() {
               required
               value={form.stock}
               onChange={handleChange}
-              className="input-vprs"
+              disabled={tieneSabores}
+              className={`input-vprs ${tieneSabores ? "bg-vprs-black/5 text-vprs-gray" : ""}`}
             />
+            {tieneSabores && (
+              <p className="font-body text-xs text-vprs-gray mt-2">
+                Se calcula sumando el stock de los sabores de abajo.
+              </p>
+            )}
           </div>
         </div>
 
