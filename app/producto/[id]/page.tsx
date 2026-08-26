@@ -57,7 +57,7 @@ export default async function PaginaProducto({
 
   const variantes = ((variantesData as unknown as VarianteConSabor[]) || []).map((v) => {
     const saborRel = Array.isArray(v.sabores) ? v.sabores[0] : v.sabores;
-    return { id: v.id, nombre: saborRel?.nombre ?? "", stock: v.stock };
+    return { id: v.id, nombre: saborRel?.nombre ?? "", disponible: v.stock > 0 };
   });
 
   return (
@@ -95,7 +95,7 @@ export default async function PaginaProducto({
             </p>
           )}
 
-          <ProductoOpciones variantes={variantes} stockSimple={prod.stock} />
+          <ProductoOpciones variantes={variantes} disponibleSimple={prod.stock > 0} />
         </div>
       </div>
     </main>

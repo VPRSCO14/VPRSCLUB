@@ -22,6 +22,7 @@ export default function VariantesEditor({ variantes, onChange }: VariantesEditor
   const [creandoSabor, setCreandoSabor] = useState(false);
   const [nuevoSabor, setNuevoSabor] = useState("");
   const [guardandoSabor, setGuardandoSabor] = useState(false);
+  const [errorSabor, setErrorSabor] = useState("");
 
   useEffect(() => {
     const cargarSabores = async () => {
@@ -48,6 +49,7 @@ export default function VariantesEditor({ variantes, onChange }: VariantesEditor
   const crearSabor = async () => {
     if (!nuevoSabor.trim()) return;
     setGuardandoSabor(true);
+    setErrorSabor("");
 
     const { data, error } = await supabase
       .from("sabores")
@@ -57,7 +59,10 @@ export default function VariantesEditor({ variantes, onChange }: VariantesEditor
 
     setGuardandoSabor(false);
 
-    if (error || !data) return;
+    if (error || !data) {
+      setErrorSabor("Error al crear sabor: " + (error?.message ?? "sin datos"));
+      return;
+    }
 
     setSabores([...sabores, data].sort((a, b) => a.nombre.localeCompare(b.nombre)));
     onChange([...variantes, { sabor_id: data.id, stock: "0" }]);
@@ -107,32 +112,38 @@ export default function VariantesEditor({ variantes, onChange }: VariantesEditor
       )}
 
       {creandoSabor ? (
-        <div className="flex items-center gap-3 mb-3">
-          <input
-            value={nuevoSabor}
-            onChange={(e) => setNuevoSabor(e.target.value)}
-            placeholder="Nombre del nuevo sabor"
-            className="input-vprs flex-1"
-          />
-          <button
-            type="button"
-            onClick={crearSabor}
-            disabled={guardandoSabor}
-            className="font-body text-sm px-4 py-2 rounded-vprs bg-vprs-black text-white shrink-0"
-          >
-            {guardandoSabor ? "..." : "Crear"}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setCreandoSabor(false);
-              setNuevoSabor("");
-            }}
-            aria-label="Cancelar"
-            className="text-vprs-gray hover:text-vprs-black transition-colors shrink-0"
-          >
-            <XIcon size={16} />
-          </button>
+        <div className="mb-3">
+          <div className="flex items-center gap-3">
+            <input
+              value={nuevoSabor}
+              onChange={(e) => setNuevoSabor(e.target.value)}
+              placeholder="Nombre del nuevo sabor"
+              className="input-vprs flex-1"
+            />
+            <button
+              type="button"
+              onClick={crearSabor}
+              disabled={guardandoSabor}
+              className="font-body text-sm px-4 py-2 rounded-vprs bg-vprs-black text-white shrink-0"
+            >
+              {guardandoSabor ? "..." : "Crear"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setCreandoSabor(false);
+                setNuevoSabor("");
+                setErrorSabor("");
+              }}
+              aria-label="Cancelar"
+              className="text-vprs-gray hover:text-vprs-black transition-colors shrink-0"
+            >
+              <XIcon size={16} />
+            </button>
+          </div>
+          {errorSabor && (
+            <p className="font-body text-xs text-vprs-accent mt-2">{errorSabor}</p>
+          )}
         </div>
       ) : (
         <div className="flex items-center gap-4">

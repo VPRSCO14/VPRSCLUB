@@ -6,27 +6,27 @@ import AddToCartButton from "./AddToCartButton";
 type Variante = {
   id: string;
   nombre: string;
-  stock: number;
+  disponible: boolean;
 };
 
 type ProductoOpcionesProps = {
   variantes: Variante[];
-  stockSimple: number;
+  disponibleSimple: boolean;
 };
 
-export default function ProductoOpciones({ variantes, stockSimple }: ProductoOpcionesProps) {
-  const primeraDisponible = variantes.find((v) => v.stock > 0) ?? variantes[0];
+export default function ProductoOpciones({ variantes, disponibleSimple }: ProductoOpcionesProps) {
+  const primeraDisponible = variantes.find((v) => v.disponible) ?? variantes[0];
   const [seleccionId, setSeleccionId] = useState(primeraDisponible?.id);
 
   if (variantes.length === 0) {
-    const agotado = stockSimple === 0;
+    const agotado = !disponibleSimple;
     return (
       <>
         <p
           className="font-body text-sm mb-6"
           style={{ color: agotado ? "#8C2F2F" : "#707070" }}
         >
-          {agotado ? "Agotado" : `${stockSimple} disponibles`}
+          {agotado ? "Sin Stock" : "Stock"}
         </p>
         <AddToCartButton agotado={agotado} />
       </>
@@ -34,7 +34,7 @@ export default function ProductoOpciones({ variantes, stockSimple }: ProductoOpc
   }
 
   const seleccion = variantes.find((v) => v.id === seleccionId) ?? variantes[0];
-  const agotado = seleccion.stock === 0;
+  const agotado = !seleccion.disponible;
 
   return (
     <>
@@ -44,7 +44,7 @@ export default function ProductoOpciones({ variantes, stockSimple }: ProductoOpc
       <div className="flex flex-wrap gap-2 mb-6">
         {variantes.map((variante) => {
           const activo = variante.id === seleccion.id;
-          const sinStock = variante.stock === 0;
+          const sinStock = !variante.disponible;
           return (
             <button
               key={variante.id}
@@ -69,7 +69,7 @@ export default function ProductoOpciones({ variantes, stockSimple }: ProductoOpc
         className="font-body text-sm mb-6"
         style={{ color: agotado ? "#8C2F2F" : "#707070" }}
       >
-        {agotado ? "Agotado" : `${seleccion.stock} disponibles`}
+        {agotado ? "Sin Stock" : "Stock"}
       </p>
 
       <AddToCartButton agotado={agotado} />
