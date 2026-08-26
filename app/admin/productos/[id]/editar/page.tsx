@@ -174,11 +174,13 @@ export default function EditarProducto() {
           <label className="font-body text-sm block mb-2">Codigo</label>
           <input
             name="codigo"
-            required
             value={form.codigo}
-            onChange={handleChange}
-            className="input-vprs"
+            disabled
+            className="input-vprs bg-vprs-black/5 text-vprs-gray"
           />
+          <p className="font-body text-xs text-vprs-gray mt-2">
+            El codigo se asigna al crear el producto y no se puede cambiar.
+          </p>
         </div>
 
         <div>

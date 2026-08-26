@@ -6,16 +6,18 @@ import VariantesEditor, { VarianteRow } from "@/components/admin/VariantesEditor
 
 type Categoria = { id: string; nombre: string };
 type Marca = { id: string; nombre: string };
+type TipoProducto = { id: string; nombre: string; prefijo: string; digitos: number; consecutivo: number };
 
 export default function NuevoProducto() {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [marcas, setMarcas] = useState<Marca[]>([]);
+  const [tipos, setTipos] = useState<TipoProducto[]>([]);
   const [variantes, setVariantes] = useState<VarianteRow[]>([]);
   const [mensaje, setMensaje] = useState("");
   const [guardando, setGuardando] = useState(false);
 
   const [form, setForm] = useState({
-    codigo: "",
+    tipo_producto_id: "",
     nombre: "",
     precio: "",
     stock: "",
@@ -28,11 +30,21 @@ export default function NuevoProducto() {
     const cargarListas = async () => {
       const { data: cats } = await supabase.from("categorias").select("id, nombre").order("nombre");
       const { data: marcasData } = await supabase.from("marcas").select("id, nombre").order("nombre");
+      const { data: tiposData } = await supabase
+        .from("tipos_producto")
+        .select("id, nombre, prefijo, digitos, consecutivo")
+        .order("nombre");
       setCategorias(cats || []);
       setMarcas(marcasData || []);
+      setTipos(tiposData || []);
     };
     cargarListas();
   }, []);
+
+  const tipoSeleccionado = tipos.find((t) => t.id === form.tipo_producto_id);
+  const codigoPreview = tipoSeleccionado
+    ? tipoSeleccionado.prefijo + String(tipoSeleccionado.consecutivo + 1).padStart(tipoSeleccionado.digitos, "0")
+    : "";
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -42,13 +54,34 @@ export default function NuevoProducto() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!form.tipo_producto_id) {
+      setMensaje("Selecciona un tipo de producto para generar el codigo.");
+      return;
+    }
+
     setGuardando(true);
     setMensaje("");
+
+    const { data: tipoActual, error: errorTipo } = await supabase
+      .from("tipos_producto")
+      .select("prefijo, digitos, consecutivo")
+      .eq("id", form.tipo_producto_id)
+      .single();
+
+    if (errorTipo || !tipoActual) {
+      setGuardando(false);
+      setMensaje("Error al leer el tipo de producto: " + errorTipo?.message);
+      return;
+    }
+
+    const siguienteConsecutivo = tipoActual.consecutivo + 1;
+    const codigo = tipoActual.prefijo + String(siguienteConsecutivo).padStart(tipoActual.digitos, "0");
 
     const { data: producto, error } = await supabase
       .from("productos")
       .insert({
-        codigo: form.codigo,
+        codigo,
         nombre: form.nombre,
         precio: parseFloat(form.precio),
         stock: parseInt(form.stock, 10),
@@ -64,6 +97,11 @@ export default function NuevoProducto() {
       setMensaje("Error al guardar: " + error?.message);
       return;
     }
+
+    await supabase
+      .from("tipos_producto")
+      .update({ consecutivo: siguienteConsecutivo })
+      .eq("id", form.tipo_producto_id);
 
     const filasVariantes = variantes.filter((v) => v.sabor_id);
     if (filasVariantes.length > 0) {
@@ -83,9 +121,14 @@ export default function NuevoProducto() {
     }
 
     setGuardando(false);
-    setMensaje("Producto guardado correctamente.");
+    setMensaje(`Producto guardado correctamente con el codigo ${codigo}.`);
+    setTipos(
+      tipos.map((t) =>
+        t.id === form.tipo_producto_id ? { ...t, consecutivo: siguienteConsecutivo } : t
+      )
+    );
     setForm({
-      codigo: "",
+      tipo_producto_id: "",
       nombre: "",
       precio: "",
       stock: "",
@@ -102,14 +145,26 @@ export default function NuevoProducto() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="font-body text-sm block mb-2">Codigo</label>
-          <input
-            name="codigo"
+          <label className="font-body text-sm block mb-2">Tipo de producto</label>
+          <select
+            name="tipo_producto_id"
             required
-            value={form.codigo}
+            value={form.tipo_producto_id}
             onChange={handleChange}
             className="input-vprs"
-          />
+          >
+            <option value="">Selecciona un tipo de producto</option>
+            {tipos.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.nombre}
+              </option>
+            ))}
+          </select>
+          <p className="font-body text-xs text-vprs-gray mt-2">
+            {tipoSeleccionado
+              ? `El codigo de este producto sera: ${codigoPreview}`
+              : "El codigo se genera solo, segun el tipo de producto."}
+          </p>
         </div>
 
         <div>

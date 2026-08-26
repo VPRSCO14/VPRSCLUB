@@ -61,6 +61,7 @@ export default function AdminDashboard() {
 
   const secciones = [
     { titulo: "Productos", verHref: "/admin/productos", nuevoHref: "/admin/productos/nuevo" },
+    { titulo: "Tipos de producto", verHref: "/admin/tipos-producto", nuevoHref: "/admin/tipos-producto/nuevo" },
     { titulo: "Categorias", verHref: "/admin/categorias", nuevoHref: "/admin/categorias/nueva" },
     { titulo: "Sabores", verHref: "/admin/sabores", nuevoHref: "/admin/sabores/nuevo" },
     { titulo: "Blog", verHref: "/admin/blog", nuevoHref: "/admin/blog/nuevo" },
