@@ -95,7 +95,13 @@ export default async function PaginaProducto({
             </p>
           )}
 
-          <ProductoOpciones variantes={variantes} disponibleSimple={prod.stock > 0} />
+          <ProductoOpciones
+            productoId={prod.id}
+            nombre={prod.nombre}
+            precio={prod.precio}
+            variantes={variantes}
+            disponibleSimple={prod.stock > 0}
+          />
         </div>
       </div>
     </main>

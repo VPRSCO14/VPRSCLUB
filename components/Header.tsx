@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { SearchIcon, UserIcon, CartIcon, ChevronDownIcon } from "./icons";
+import { SearchIcon, UserIcon, ChevronDownIcon } from "./icons";
+import CartButton from "./CartButton";
 
 const NAV_CATEGORIAS = [
   { label: "Desechables", nombre: "Desechables" },
@@ -58,9 +59,7 @@ export default async function Header() {
         <Link href="/admin/login" aria-label="Cuenta" className="hover:text-vprs-white transition-colors">
           <UserIcon />
         </Link>
-        <button aria-label="Carrito" className="hover:text-vprs-white transition-colors">
-          <CartIcon />
-        </button>
+        <CartButton />
       </div>
     </header>
   );

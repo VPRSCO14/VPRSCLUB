@@ -10,11 +10,20 @@ type Variante = {
 };
 
 type ProductoOpcionesProps = {
+  productoId: string;
+  nombre: string;
+  precio: number;
   variantes: Variante[];
   disponibleSimple: boolean;
 };
 
-export default function ProductoOpciones({ variantes, disponibleSimple }: ProductoOpcionesProps) {
+export default function ProductoOpciones({
+  productoId,
+  nombre,
+  precio,
+  variantes,
+  disponibleSimple,
+}: ProductoOpcionesProps) {
   const primeraDisponible = variantes.find((v) => v.disponible) ?? variantes[0];
   const [seleccionId, setSeleccionId] = useState(primeraDisponible?.id);
 
@@ -28,7 +37,7 @@ export default function ProductoOpciones({ variantes, disponibleSimple }: Produc
         >
           {agotado ? "Sin Stock" : "Stock"}
         </p>
-        <AddToCartButton agotado={agotado} />
+        <AddToCartButton agotado={agotado} productoId={productoId} nombre={nombre} precio={precio} />
       </>
     );
   }
@@ -72,7 +81,14 @@ export default function ProductoOpciones({ variantes, disponibleSimple }: Produc
         {agotado ? "Sin Stock" : "Stock"}
       </p>
 
-      <AddToCartButton agotado={agotado} />
+      <AddToCartButton
+        agotado={agotado}
+        productoId={productoId}
+        nombre={nombre}
+        precio={precio}
+        saborId={seleccion.id}
+        saborNombre={seleccion.nombre}
+      />
     </>
   );
 }
