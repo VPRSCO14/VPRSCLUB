@@ -38,7 +38,13 @@ export default async function Home() {
     .eq("activo", true)
     .limit(8);
 
-  const destacado = productos?.[0];
+  const { data: destacado } = await supabase
+    .from("productos")
+    .select("id, nombre")
+    .eq("recomendado", true)
+    .eq("activo", true)
+    .limit(1)
+    .maybeSingle();
 
   return (
     <main className="min-h-screen">

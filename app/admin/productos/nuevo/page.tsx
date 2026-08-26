@@ -26,6 +26,7 @@ export default function NuevoProducto() {
     descripcion: "",
     categoria_id: "",
     marca_id: "",
+    recomendado: false,
   });
 
   useEffect(() => {
@@ -61,7 +62,11 @@ export default function NuevoProducto() {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value, type } = e.target;
+    setForm({
+      ...form,
+      [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -100,6 +105,7 @@ export default function NuevoProducto() {
         descripcion: form.descripcion,
         categoria_id: form.categoria_id || null,
         marca_id: form.marca_id || null,
+        recomendado: form.recomendado,
       })
       .select("id")
       .single();
@@ -108,6 +114,14 @@ export default function NuevoProducto() {
       setGuardando(false);
       setMensaje("Error al guardar: " + error?.message);
       return;
+    }
+
+    if (form.recomendado) {
+      await supabase
+        .from("productos")
+        .update({ recomendado: false })
+        .eq("recomendado", true)
+        .neq("id", producto.id);
     }
 
     await supabase
@@ -147,6 +161,7 @@ export default function NuevoProducto() {
       descripcion: "",
       categoria_id: "",
       marca_id: "",
+      recomendado: false,
     });
     setVariantes([]);
   };
@@ -272,6 +287,19 @@ export default function NuevoProducto() {
         </div>
 
         <VariantesEditor variantes={variantes} onChange={setVariantes} />
+
+        <label className="flex items-center gap-2 font-body text-sm">
+          <input
+            type="checkbox"
+            name="recomendado"
+            checked={form.recomendado}
+            onChange={handleChange}
+          />
+          Recomendado por el equipo
+        </label>
+        <p className="font-body text-xs text-vprs-gray -mt-2">
+          Se muestra en la sección "Recomendado por el equipo" de la home. Solo puede haber uno; si marcas este, se desmarca el que estaba antes.
+        </p>
 
         {mensaje && <p className="font-body text-sm">{mensaje}</p>}
 

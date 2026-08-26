@@ -31,6 +31,7 @@ export default function EditarProducto() {
     categoria_id: "",
     marca_id: "",
     activo: true,
+    recomendado: false,
   });
 
   useEffect(() => {
@@ -41,7 +42,7 @@ export default function EditarProducto() {
           supabase.from("marcas").select("id, nombre").order("nombre"),
           supabase
             .from("productos")
-            .select("codigo, nombre, precio, stock, descripcion, categoria_id, marca_id, activo")
+            .select("codigo, nombre, precio, stock, descripcion, categoria_id, marca_id, activo, recomendado")
             .eq("id", id)
             .single(),
           supabase.from("producto_variantes").select("id, sabor_id, stock").eq("producto_id", id),
@@ -60,6 +61,7 @@ export default function EditarProducto() {
           categoria_id: producto.categoria_id ?? "",
           marca_id: producto.marca_id ?? "",
           activo: producto.activo ?? true,
+          recomendado: producto.recomendado ?? false,
         });
       }
 
@@ -112,6 +114,7 @@ export default function EditarProducto() {
         categoria_id: form.categoria_id || null,
         marca_id: form.marca_id || null,
         activo: form.activo,
+        recomendado: form.recomendado,
       })
       .eq("id", id);
 
@@ -119,6 +122,14 @@ export default function EditarProducto() {
       setGuardando(false);
       setMensaje("Error al guardar: " + error.message);
       return;
+    }
+
+    if (form.recomendado) {
+      await supabase
+        .from("productos")
+        .update({ recomendado: false })
+        .eq("recomendado", true)
+        .neq("id", id);
     }
 
     const filasVariantes = variantes.filter((v) => v.sabor_id);
@@ -291,6 +302,19 @@ export default function EditarProducto() {
           />
           Visible en la tienda
         </label>
+
+        <label className="flex items-center gap-2 font-body text-sm">
+          <input
+            type="checkbox"
+            name="recomendado"
+            checked={form.recomendado}
+            onChange={handleChange}
+          />
+          Recomendado por el equipo
+        </label>
+        <p className="font-body text-xs text-vprs-gray -mt-2">
+          Se muestra en la sección "Recomendado por el equipo" de la home. Solo puede haber uno; si marcas este, se desmarca el que estaba antes.
+        </p>
 
         {mensaje && <p className="font-body text-sm">{mensaje}</p>}
 
