@@ -11,13 +11,14 @@ type ProductoConCategoria = {
   precio: number;
   stock: number;
   activo: boolean;
+  recomendado: boolean;
   categorias: { nombre: string } | { nombre: string }[] | null;
 };
 
 export default async function ListaProductos() {
   const { data } = await supabase
     .from("productos")
-    .select("id, codigo, nombre, precio, stock, activo, categorias(nombre)")
+    .select("id, codigo, nombre, precio, stock, activo, recomendado, categorias(nombre)")
     .order("nombre");
 
   const productos = (data ?? []) as unknown as ProductoConCategoria[];
@@ -50,7 +51,14 @@ export default async function ListaProductos() {
               className="flex items-center justify-between gap-4 px-6 py-4 hover:bg-vprs-black/5 transition-colors"
             >
               <div className="min-w-0">
-                <p className="font-body font-medium truncate">{producto.nombre}</p>
+                <p className="font-body font-medium truncate flex items-center gap-2">
+                  {producto.nombre}
+                  {producto.recomendado && (
+                    <span className="font-body text-xs px-2 py-0.5 rounded-full text-white bg-vprs-accent shrink-0">
+                      Recomendado
+                    </span>
+                  )}
+                </p>
                 <p className="font-body text-xs text-vprs-gray mt-1">
                   {producto.codigo}
                   {categoriaRel?.nombre ? ` · ${categoriaRel.nombre}` : ""}
