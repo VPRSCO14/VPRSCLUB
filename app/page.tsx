@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import CategoryCard from "@/components/CategoryCard";
-import ProductCard from "@/components/ProductCard";
+import BlogCard from "@/components/BlogCard";
 import { getMaterialGradient } from "@/lib/materials";
 
 export const dynamic = "force-dynamic";
@@ -32,11 +32,12 @@ export default async function Home() {
       })
     : categoriasData;
 
-  const { data: productos } = await supabase
-    .from("productos")
-    .select("id, nombre, precio, codigo")
-    .eq("activo", true)
-    .limit(8);
+  const { data: articulos } = await supabase
+    .from("articulos")
+    .select("id, titulo, slug, resumen, imagen_url, publicado_en")
+    .eq("publicado", true)
+    .order("publicado_en", { ascending: false })
+    .limit(4);
 
   const { data: destacado } = await supabase
     .from("productos")
@@ -87,12 +88,19 @@ export default async function Home() {
           <h2 className="font-display text-2xl">Novedades</h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {productos?.map((prod) => (
-            <ProductCard key={prod.id} id={prod.id} nombre={prod.nombre} precio={prod.precio} />
+          {articulos?.map((articulo) => (
+            <BlogCard
+              key={articulo.id}
+              slug={articulo.slug}
+              titulo={articulo.titulo}
+              resumen={articulo.resumen}
+              imagenUrl={articulo.imagen_url}
+              publicadoEn={articulo.publicado_en}
+            />
           ))}
-          {(!productos || productos.length === 0) && (
+          {(!articulos || articulos.length === 0) && (
             <p className="font-body text-vprs-gray">
-              Aun no hay productos cargados.
+              Aun no hay articulos publicados.
             </p>
           )}
         </div>
