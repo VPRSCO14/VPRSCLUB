@@ -2,8 +2,25 @@
 
 import { useState } from "react";
 import { CheckIcon } from "./icons";
+import { agregarAlCarrito } from "@/lib/cart";
 
-export default function AddToCartButton({ agotado }: { agotado: boolean }) {
+type AddToCartButtonProps = {
+  agotado: boolean;
+  productoId: string;
+  nombre: string;
+  precio: number;
+  saborId?: string;
+  saborNombre?: string;
+};
+
+export default function AddToCartButton({
+  agotado,
+  productoId,
+  nombre,
+  precio,
+  saborId,
+  saborNombre,
+}: AddToCartButtonProps) {
   const [agregado, setAgregado] = useState(false);
 
   if (agotado) {
@@ -14,9 +31,15 @@ export default function AddToCartButton({ agotado }: { agotado: boolean }) {
     );
   }
 
+  const handleClick = () => {
+    agregarAlCarrito({ productoId, nombre, precio, saborId, saborNombre });
+    setAgregado(true);
+    setTimeout(() => setAgregado(false), 1500);
+  };
+
   return (
     <button
-      onClick={() => setAgregado(true)}
+      onClick={handleClick}
       disabled={agregado}
       className="btn-dark w-full gap-2"
     >
