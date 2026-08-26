@@ -6,11 +6,31 @@ import { getMaterialGradient } from "@/lib/materials";
 
 export const dynamic = "force-dynamic";
 
+const ORDEN_CATEGORIAS = [
+  "Desechables",
+  "Semi Desechables",
+  "Recargables",
+  "Sales",
+  "Parafernalia",
+  "CBD",
+  "Otros",
+];
+
 export default async function Home() {
-  const { data: categorias } = await supabase
+  const { data: categoriasData } = await supabase
     .from("categorias")
-    .select("id, nombre, slug, banner_url")
-    .order("nombre");
+    .select("id, nombre, slug, banner_url");
+
+  const categorias = categoriasData
+    ? [...categoriasData].sort((a, b) => {
+        const indexA = ORDEN_CATEGORIAS.indexOf(a.nombre);
+        const indexB = ORDEN_CATEGORIAS.indexOf(b.nombre);
+        if (indexA === -1 && indexB === -1) return a.nombre.localeCompare(b.nombre);
+        if (indexA === -1) return 1;
+        if (indexB === -1) return -1;
+        return indexA - indexB;
+      })
+    : categoriasData;
 
   const { data: productos } = await supabase
     .from("productos")
