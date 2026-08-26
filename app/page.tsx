@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import CategoryCard from "@/components/CategoryCard";
 import ProductCard from "@/components/ProductCard";
 import { getMaterialGradient } from "@/lib/materials";
 
@@ -8,7 +9,7 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const { data: categorias } = await supabase
     .from("categorias")
-    .select("id, nombre, slug")
+    .select("id, nombre, slug, banner_url")
     .order("nombre");
 
   const { data: productos } = await supabase
@@ -40,13 +41,12 @@ export default async function Home() {
         <h2 className="font-display text-2xl mb-8">Categorias</h2>
         <div className="flex flex-nowrap gap-3 overflow-x-auto pb-2">
           {categorias?.map((cat) => (
-            <Link
+            <CategoryCard
               key={cat.id}
-              href={`/tienda/${cat.slug}`}
-              className="shrink-0 font-body text-sm px-5 py-2.5 rounded-full border border-vprs-black/15 text-vprs-black hover:border-vprs-black hover:bg-vprs-black hover:text-white transition-colors"
-            >
-              {cat.nombre}
-            </Link>
+              slug={cat.slug}
+              nombre={cat.nombre}
+              imagenUrl={cat.banner_url}
+            />
           ))}
           {(!categorias || categorias.length === 0) && (
             <p className="font-body text-vprs-gray">
