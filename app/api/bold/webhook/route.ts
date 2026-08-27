@@ -7,16 +7,23 @@ export async function POST(request: Request) {
   const rawBody = await request.text();
   const firmaRecibida = request.headers.get("x-bold-signature") ?? "";
   const secretKey = process.env.BOLD_SECRET_KEY!;
+  const apiKey = process.env.BOLD_API_KEY!;
+  const bodyBase64 = Buffer.from(rawBody).toString("base64");
 
-  const firmaEsperada = crypto
-    .createHmac("sha256", secretKey)
-    .update(Buffer.from(rawBody).toString("base64"))
-    .digest("hex");
+  const firmaEsperada = crypto.createHmac("sha256", secretKey).update(bodyBase64).digest("hex");
 
   if (firmaRecibida !== firmaEsperada) {
+    const candidatos = {
+      hmac_hex_base64body_secret: firmaEsperada,
+      hmac_hex_rawbody_secret: crypto.createHmac("sha256", secretKey).update(rawBody).digest("hex"),
+      hmac_b64_base64body_secret: crypto.createHmac("sha256", secretKey).update(bodyBase64).digest("base64"),
+      hmac_b64_rawbody_secret: crypto.createHmac("sha256", secretKey).update(rawBody).digest("base64"),
+      hmac_hex_base64body_apikey: crypto.createHmac("sha256", apiKey).update(bodyBase64).digest("hex"),
+      hmac_hex_rawbody_apikey: crypto.createHmac("sha256", apiKey).update(rawBody).digest("hex"),
+    };
     console.log("[bold-webhook] firma recibida:", firmaRecibida);
-    console.log("[bold-webhook] firma esperada:", firmaEsperada);
-    console.log("[bold-webhook] largo secretKey:", secretKey?.length ?? 0);
+    console.log("[bold-webhook] candidatos:", JSON.stringify(candidatos, null, 2));
+    console.log("[bold-webhook] largo secretKey:", secretKey?.length ?? 0, "largo apiKey:", apiKey?.length ?? 0);
     console.log("[bold-webhook] cuerpo crudo:", rawBody);
     return NextResponse.json({ error: "Firma invalida." }, { status: 401 });
   }
