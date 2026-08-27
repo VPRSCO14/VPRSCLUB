@@ -101,7 +101,7 @@ export async function POST(request: Request) {
     currency,
     apiKey,
     integritySignature,
-    description: `Pedido VPRS.CO ${orderReference.slice(0, 8)}`,
+    description: `Pedido VPRS ${orderReference.slice(0, 8)}`,
     redirectionUrl: `${origin}/checkout/confirmacion`,
     originUrl: origin,
     customerData: { email: correo, fullName: nombre, phone: telefono },
