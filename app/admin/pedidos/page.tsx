@@ -40,7 +40,7 @@ export default function ListaPedidos() {
       }
 
       const { data } = await supabase
-        .from("pedidos")
+        .from("pedidos_tienda")
         .select("id, nombre, ciudad, departamento, total, estado, created_at")
         .order("created_at", { ascending: false });
 
