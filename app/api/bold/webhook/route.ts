@@ -14,6 +14,10 @@ export async function POST(request: Request) {
     .digest("hex");
 
   if (firmaRecibida !== firmaEsperada) {
+    console.log("[bold-webhook] firma recibida:", firmaRecibida);
+    console.log("[bold-webhook] firma esperada:", firmaEsperada);
+    console.log("[bold-webhook] largo secretKey:", secretKey?.length ?? 0);
+    console.log("[bold-webhook] cuerpo crudo:", rawBody);
     return NextResponse.json({ error: "Firma invalida." }, { status: 401 });
   }
 
