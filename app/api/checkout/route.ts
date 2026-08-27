@@ -59,7 +59,7 @@ export async function POST(request: Request) {
   const total = itemsValidados.reduce((acc, item) => acc + item.precio * item.cantidad, 0);
 
   const { data: pedido, error: errorPedido } = await supabaseAdmin
-    .from("pedidos")
+    .from("pedidos_tienda")
     .insert({
       nombre,
       cedula,
@@ -91,7 +91,7 @@ export async function POST(request: Request) {
     .update(`${orderReference}${amount}${currency}${secretKey}`)
     .digest("hex");
 
-  await supabaseAdmin.from("pedidos").update({ bold_order_id: orderReference }).eq("id", pedido.id);
+  await supabaseAdmin.from("pedidos_tienda").update({ bold_order_id: orderReference }).eq("id", pedido.id);
 
   const origin = new URL(request.url).origin;
 

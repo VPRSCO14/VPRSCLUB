@@ -49,7 +49,7 @@ export default function DetallePedido() {
         return;
       }
 
-      const { data } = await supabase.from("pedidos").select("*").eq("id", params.id).single();
+      const { data } = await supabase.from("pedidos_tienda").select("*").eq("id", params.id).single();
       setPedido(data as Pedido | null);
       setCargando(false);
     };
@@ -62,7 +62,7 @@ export default function DetallePedido() {
     setMensaje("");
 
     const { error } = await supabase
-      .from("pedidos")
+      .from("pedidos_tienda")
       .update({ estado, updated_at: new Date().toISOString() })
       .eq("id", pedido.id);
 

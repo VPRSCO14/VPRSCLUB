@@ -28,7 +28,7 @@ export async function POST(request: Request) {
   const supabaseAdmin = getSupabaseAdmin();
 
   await supabaseAdmin
-    .from("pedidos")
+    .from("pedidos_tienda")
     .update({
       estado: nuevoEstado,
       bold_payment_id: evento?.data?.payment_id ?? null,
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
 
   if (nuevoEstado === "pagado") {
     const { data: pedido } = await supabaseAdmin
-      .from("pedidos")
+      .from("pedidos_tienda")
       .select("items")
       .eq("bold_order_id", referencia)
       .single();
