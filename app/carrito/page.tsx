@@ -93,10 +93,9 @@ export default function PaginaCarrito() {
               <span className="text-vprs-gray">Subtotal</span>
               <span className="font-medium">${total.toLocaleString("es-CO")}</span>
             </div>
-            <p className="font-body text-xs text-vprs-gray">
-              Este carrito guarda tu pedido en este navegador. La compra y el pago se coordinan
-              directamente con nosotros.
-            </p>
+            <Link href="/checkout" className="btn-dark w-full block text-center">
+              Continuar al pago
+            </Link>
           </div>
         </div>
       )}

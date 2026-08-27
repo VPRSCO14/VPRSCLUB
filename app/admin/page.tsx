@@ -99,11 +99,11 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="rounded-vprs border border-vprs-black/10 p-6 text-vprs-gray/50">
+        <Link href="/admin/pedidos" className="card-vprs p-6 block hover:bg-vprs-black/5 transition-colors">
           <CartIcon className="mb-4" />
           <p className="font-body font-medium mb-1">Pedidos</p>
-          <p className="font-body text-xs">Próximamente</p>
-        </div>
+          <p className="font-body text-xs text-vprs-gray">Ver los pedidos pagados y pendientes</p>
+        </Link>
 
         <div className="rounded-vprs border border-vprs-black/10 p-6 text-vprs-gray/50">
           <UserIcon className="mb-4" />
