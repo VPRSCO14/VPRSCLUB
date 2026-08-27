@@ -13,6 +13,16 @@ export async function POST(request: Request) {
   const firmaEsperada = crypto.createHmac("sha256", secretKey).update(bodyBase64).digest("hex");
 
   if (firmaRecibida !== firmaEsperada) {
+    let dataStr = "";
+    let dataBase64 = "";
+    try {
+      const parsed = JSON.parse(rawBody);
+      dataStr = JSON.stringify(parsed.data ?? {});
+      dataBase64 = Buffer.from(dataStr).toString("base64");
+    } catch {
+      // ignore parse errors, dataStr stays empty
+    }
+
     const candidatos = {
       hmac_hex_base64body_secret: firmaEsperada,
       hmac_hex_rawbody_secret: crypto.createHmac("sha256", secretKey).update(rawBody).digest("hex"),
@@ -20,11 +30,16 @@ export async function POST(request: Request) {
       hmac_b64_rawbody_secret: crypto.createHmac("sha256", secretKey).update(rawBody).digest("base64"),
       hmac_hex_base64body_apikey: crypto.createHmac("sha256", apiKey).update(bodyBase64).digest("hex"),
       hmac_hex_rawbody_apikey: crypto.createHmac("sha256", apiKey).update(rawBody).digest("hex"),
+      hmac_hex_data_secret: crypto.createHmac("sha256", secretKey).update(dataStr).digest("hex"),
+      hmac_hex_base64data_secret: crypto.createHmac("sha256", secretKey).update(dataBase64).digest("hex"),
+      hmac_hex_data_apikey: crypto.createHmac("sha256", apiKey).update(dataStr).digest("hex"),
+      hmac_hex_base64data_apikey: crypto.createHmac("sha256", apiKey).update(dataBase64).digest("hex"),
     };
     console.log("[bold-webhook] firma recibida:", firmaRecibida);
     console.log("[bold-webhook] candidatos:", JSON.stringify(candidatos, null, 2));
     console.log("[bold-webhook] largo secretKey:", secretKey?.length ?? 0, "largo apiKey:", apiKey?.length ?? 0);
     console.log("[bold-webhook] cuerpo crudo:", rawBody);
+    console.log("[bold-webhook] data field:", dataStr);
     return NextResponse.json({ error: "Firma invalida." }, { status: 401 });
   }
 
